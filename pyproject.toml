@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-autoload"
+version = "0.1.0"
+description = "Convention-over-configuration auto-discovery for Django: apps, urls, settings and app components."
+readme = "README.md"
+requires-python = ">=3.14"
+license = { text = "MIT" }
+authors = [{ name = "Anthony Gréau", email = "greau.anthony@gmail.com" }]
+keywords = ["django", "autodiscover", "autoload", "convention", "settings"]
+classifiers = [
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["django>=4.2"]
+
+[project.optional-dependencies]
+drf = ["djangorestframework>=3.14"]
+celery = ["celery>=5.3"]
+test = ["pytest", "pytest-django", "djangorestframework>=3.14", "celery>=5.3"]
+
+[project.urls]
+Homepage = "https://github.com/chrysa/django-autoload"
+Issues = "https://github.com/chrysa/django-autoload/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/django_autoload"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
