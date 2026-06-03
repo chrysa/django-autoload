@@ -19,7 +19,9 @@ if TYPE_CHECKING:
     from rest_framework.routers import DefaultRouter
 
 
-def autodiscover_routers(*, filename: str = "api/routers.py", attr: str = "router") -> DefaultRouter:
+def autodiscover_routers(
+    *, filename: str = "api/routers.py", attr: str = "router"
+) -> DefaultRouter:
     """Return a ``DefaultRouter`` merging every discovered app router.
 
     Usage::
@@ -30,11 +32,6 @@ def autodiscover_routers(*, filename: str = "api/routers.py", attr: str = "route
         urlpatterns = [path("api/", include(router.urls))]
     """
     from rest_framework.routers import DefaultRouter
-
-    # Discovery globs the filesystem for modules that may have appeared after the
-    # parent package was first imported (e.g. generated at runtime). Drop importlib's
-    # cached directory listings so import_module() can see those fresh modules.
-    importlib.invalidate_caches()
 
     base = get_base_dir()
     combined = DefaultRouter()
