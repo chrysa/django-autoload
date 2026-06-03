@@ -7,3 +7,6 @@ dist/
 .tox/
 .venv/
 .codegraph/
+graphify
+sys
+graphify-out/
