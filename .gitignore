@@ -10,3 +10,8 @@ dist/
 graphify
 sys
 graphify-out/
+
+# graphify (local knowledge graph — never commit)
+/graphify
+/sys
+.graphify_version
