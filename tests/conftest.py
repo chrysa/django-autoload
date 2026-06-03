@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 import django
@@ -27,14 +28,14 @@ def _write(path: Path, content: str = "") -> None:
 
 
 @pytest.fixture
-def project_tree(tmp_path: Path) -> Path:
+def project_tree(tmp_path: Path) -> Iterator[Path]:
     """Build a fake project with two apps under ``apps/`` and put it on sys.path.
 
-        <tmp>/apps/blog/apps.py
-        <tmp>/apps/blog/api/urls.py
-        <tmp>/apps/blog/signals.py
-        <tmp>/apps/shop/apps.py
-        <tmp>/settings/base/a.py  (UPPER setting)
+    <tmp>/apps/blog/apps.py
+    <tmp>/apps/blog/api/urls.py
+    <tmp>/apps/blog/signals.py
+    <tmp>/apps/shop/apps.py
+    <tmp>/settings/base/a.py  (UPPER setting)
     """
     _write(tmp_path / "apps" / "__init__.py")
     _write(tmp_path / "apps" / "blog" / "__init__.py")
@@ -57,3 +58,10 @@ def project_tree(tmp_path: Path) -> Path:
     sys.path.insert(0, str(tmp_path))
     yield tmp_path
     sys.path.remove(str(tmp_path))
+    # Each test gets a fresh tmp_path but reuses the same package names
+    # (apps.*, settings.*). Purge them from sys.modules so the next test does
+    # not import_module() a package whose cached __path__ points at this now
+    # deleted directory -- otherwise discovery is order-dependent.
+    for name in list(sys.modules):
+        if name in {"apps", "settings"} or name.startswith(("apps.", "settings.")):
+            del sys.modules[name]

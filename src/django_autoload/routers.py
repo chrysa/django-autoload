@@ -19,7 +19,9 @@ if TYPE_CHECKING:
     from rest_framework.routers import DefaultRouter
 
 
-def autodiscover_routers(*, filename: str = "api/routers.py", attr: str = "router") -> DefaultRouter:
+def autodiscover_routers(
+    *, filename: str = "api/routers.py", attr: str = "router"
+) -> DefaultRouter:
     """Return a ``DefaultRouter`` merging every discovered app router.
 
     Usage::
