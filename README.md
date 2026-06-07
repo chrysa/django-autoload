@@ -66,7 +66,7 @@ urlpatterns = autodiscover_urls("api") + autodiscover_urls("admin")
 
 ## Optional extras
 
-Both extras pull their dependency in lazily — neither is imported unless you
+These extras pull their dependency in lazily — none is imported unless you
 call it, so the core stays Django-only.
 
 ### DRF — aggregate routers (`pip install 'django-autoload[drf]'`)
@@ -91,6 +91,18 @@ from django_autoload.tasks import autodiscover_tasks
 
 app = Celery("proj")
 autodiscover_tasks(app)                          # uses discover_apps() as packages
+```
+
+### RQ / django-rq — import job modules (`pip install 'django-autoload[rq]'` or `[django-rq]`)
+
+RQ has no task autodiscovery, so each app's job module must be imported once for its
+`@job` decorators (rq or django_rq) and rq-scheduler registrations to take effect:
+
+```python
+# your AppConfig.ready() or an rq init module
+from django_autoload.jobs import autodiscover_jobs
+
+autodiscover_jobs()                              # imports apps/<app>/jobs.py for every app
 ```
 
 ## License

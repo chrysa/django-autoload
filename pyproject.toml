@@ -23,7 +23,9 @@ dependencies = ["django>=4.2"]
 [project.optional-dependencies]
 drf = ["djangorestframework>=3.14"]
 celery = ["celery>=5.3"]
-test = ["pytest", "pytest-django", "djangorestframework>=3.14", "celery>=5.3"]
+rq = ["rq>=1.10"]
+django-rq = ["django-rq>=2.5"]
+test = ["pytest", "pytest-django", "djangorestframework>=3.14", "celery>=5.3", "rq>=1.10", "django-rq>=2.5"]
 
 [project.urls]
 Homepage = "https://github.com/chrysa/django-autoload"
