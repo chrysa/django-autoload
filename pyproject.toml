@@ -37,3 +37,7 @@ packages = ["src/django_autoload"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.ruff]
+# examples/ holds illustrative demo Django apps, not library code.
+extend-exclude = ["examples"]
