@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import types
 from pathlib import Path
 
 from django.test import override_settings
 
+from django_autoload import apply_settings
 from django_autoload import autodiscover_urls
 from django_autoload import autoload_into
 from django_autoload import discover_apps
@@ -54,3 +56,18 @@ def test_discover_components_imports_module(project_tree: Path) -> None:
     with override_settings(AUTOLOAD=cfg):
         imported = discover_components()
         assert "apps.blog.signals" in imported
+
+
+def test_apply_settings_sets_attrs_on_module_object() -> None:
+    target = types.ModuleType("dummy_target")
+    apply_settings({"FOO": 1, "BAR": "x"}, target=target)
+    assert target.FOO == 1
+    assert target.BAR == "x"
+
+
+def test_apply_settings_accepts_dotted_target(project_tree: Path) -> None:
+    # apps.blog.signals exists in the synthetic tree and is importable.
+    apply_settings({"INJECTED": 7}, target="apps.blog.signals")
+    import apps.blog.signals as signals
+
+    assert signals.INJECTED == 7
