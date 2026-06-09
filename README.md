@@ -53,6 +53,23 @@ from django_autoload import autodiscover_urls
 urlpatterns = autodiscover_urls("api") + autodiscover_urls("admin")
 ```
 
+When settings must be resolved lazily — e.g. an app injecting its own
+`settings.py` from inside `AppConfig.ready()` — use `apply_settings`, the
+runtime counterpart of `globals().update(...)`:
+
+```python
+# apps/websocket_server/apps.py
+import sys
+from django.apps import AppConfig
+from django_autoload import apply_settings, discover_app_settings
+
+class WebsocketServerConfig(AppConfig):
+    name = "apps.websocket_server"
+
+    def ready(self):
+        apply_settings(discover_app_settings(), target=sys.modules[__name__])
+```
+
 ## API
 
 | Function | Purpose |
@@ -62,6 +79,7 @@ urlpatterns = autodiscover_urls("api") + autodiscover_urls("admin")
 | `autodiscover_urls(name)` | `include()` patterns for a `URL_PATTERNS` entry |
 | `load_settings(dirs=...)` | merge UPPER_CASE settings from directories |
 | `discover_app_settings(filename=...)` | merge per-app settings modules |
+| `apply_settings(values, *, target)` | inject a settings mapping onto a module at runtime |
 | `discover_components()` | import per-app components (auto-called on `ready()`) |
 
 ## Optional extras

@@ -8,12 +8,14 @@ Two complementary strategies, both optional:
   (``settings.py`` by default) found under the scan roots.
 
 Only ``UPPER_CASE`` names are collected, matching Django's settings convention.
+:func:`apply_settings` then injects a merged mapping onto a target module at
+runtime, the counterpart of the ``globals().update(load_settings())`` idiom.
 """
 
 from __future__ import annotations
 
 import importlib
-from pathlib import Path
+from types import ModuleType
 from typing import Any
 
 from .conf import dotted_path
@@ -64,3 +66,20 @@ def discover_app_settings(*, filename: str = "settings.py") -> dict[str, Any]:
                 seen.add(dotted)
                 merged.update(_extract(dotted))
     return merged
+
+
+def apply_settings(values: dict[str, Any], *, target: ModuleType | str) -> None:
+    """Set each item of ``values`` as an attribute on ``target`` at runtime.
+
+    The runtime counterpart of ``globals().update(load_settings())``: use it when
+    settings are resolved lazily — typically inside ``AppConfig.ready()`` — and
+    must be injected into a module that is not the caller's own namespace.
+
+    ``target`` is a module object or a dotted module name (imported on demand).
+    Every key is written as-is; callers usually pass the result of
+    :func:`load_settings` or :func:`discover_app_settings`, which already keep
+    UPPER_CASE names only.
+    """
+    module = importlib.import_module(target) if isinstance(target, str) else target
+    for name, value in values.items():
+        setattr(module, name, value)

@@ -8,6 +8,7 @@ Public API::
         autodiscover_urls,      # (name) -> list of include() URL patterns
         load_settings,          # merge settings fragments from SETTINGS_DIRS
         discover_app_settings,  # merge per-app settings.py modules
+        apply_settings,         # inject a settings mapping onto a module at runtime
         discover_components,    # import per-app components (called on ready())
     )
 
@@ -22,12 +23,14 @@ from .conf import get_config
 from .discovery import autoload_into
 from .discovery import discover_app_markers
 from .discovery import discover_apps
+from .settings import apply_settings
 from .settings import discover_app_settings
 from .settings import load_settings
 from .urls import autodiscover_urls
 
 
 __all__ = [
+    "apply_settings",
     "autodiscover_urls",
     "autoload_into",
     "discover_app_markers",
