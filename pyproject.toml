@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-autoload"
@@ -31,8 +31,9 @@ test = ["pytest", "pytest-django", "djangorestframework>=3.14", "celery>=5.3", "
 Homepage = "https://github.com/chrysa/django-autoload"
 Issues = "https://github.com/chrysa/django-autoload/issues"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/django_autoload"]
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["django_autoload*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

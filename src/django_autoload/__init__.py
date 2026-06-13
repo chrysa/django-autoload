@@ -18,6 +18,9 @@ No project layout is assumed: with no ``AUTOLOAD`` setting, discovery scans
 
 from __future__ import annotations
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version
+
 from .components import discover_components
 from .conf import get_config
 from .discovery import autoload_into
@@ -29,7 +32,14 @@ from .settings import load_settings
 from .urls import autodiscover_urls
 
 
+try:
+    __version__ = version("django-autoload")
+except PackageNotFoundError:  # editable install / not installed
+    __version__ = "0.0.0+unknown"
+
+
 __all__ = [
+    "__version__",
     "apply_settings",
     "autodiscover_urls",
     "autoload_into",
