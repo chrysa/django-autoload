@@ -1,38 +1,33 @@
+---
+# Thin caller of the generalized chrysa lean CI (gate = pre-commit; reports → Sonar;
+# test matrix; sonar). Auto-versioning stays in release.yml (GitVersion).
+
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    pull_request:
+        branches: [main]
+    push:
+        branches: [main, "feat/**", "fix/**", "chore/**", "ci/**"]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    checks: write
+    pull-requests: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.14"]
-        django-version: ["4.2", "5.1", "5.2"]
-    name: py${{ matrix.python-version }} · Django ${{ matrix.django-version }}
-    steps:
-      - uses: actions/checkout@v6.0.3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6.2.0
+    ci:
+        uses: chrysa/github-actions/.github/workflows/ci-python.yml@main
         with:
-          python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[test]"
-          pip install "django~=${{ matrix.django-version }}.0"
-
-      - name: Run tests
-        run: python -m pytest -q
+            package: django_autoload
+            sources: "src/django_autoload tests"
+            project-key: chrysa_django-autoload
+            project-name: django-autoload
+            sonar-sources: src
+            typecheck-paths: src/django_autoload
+        secrets: inherit
