@@ -64,3 +64,7 @@ All checks run via `make` or `pre-commit` only — never invoke `ruff` / `pytest
 
 Shared skills from `shared-standards/.claude/skills/` — load `testing-pytest/SKILL.md` for the
 pytest DDD + pytest-mock conventions when writing tests.
+
+<!-- chrysa:standards-import:start -->
+@.chrysa/STANDARDS.md
+<!-- chrysa:standards-import:end -->
