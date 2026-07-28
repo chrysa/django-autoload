@@ -31,16 +31,9 @@ examples/        # runnable demo project
 
 ## Conventions
 
-- Language: English — all code, comments, docs, and config files.
-- Commits: Conventional Commits (`feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`).
 - Branches: `feat/`, `fix/`, `chore/`, `docs/`. Default branch: `main`.
 - Build backend: `hatchling` (library tier — allowed per `python-library.md`).
-
-## Standards
-
-- Max function lines: 50 · Max file lines: 500 · Lint warnings: 0
-- Test coverage: ≥ 85% (public API is the priority surface)
-- `mypy --strict` clean · full type annotations on the public API · `py.typed` present
+- `mypy --strict` clean · full type annotations on the public API · `py.typed` present.
 
 ## Setup
 
@@ -60,7 +53,6 @@ All checks run via `make` or `pre-commit` only — never invoke `ruff` / `pytest
 - Runs on push to `main` and on PRs. CI must pass before merging.
 - SonarCloud analysis is configured in CI.
 
-## Skills
 
 Shared skills from `shared-standards/.claude/skills/` — load `testing-pytest/SKILL.md` for the
 pytest DDD + pytest-mock conventions when writing tests.
