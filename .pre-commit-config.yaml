@@ -5,7 +5,7 @@ minimum_pre_commit_version: 4.1.0
 exclude: ^\.claude/
 repos:
 - repo: https://github.com/chrysa/pre-commit-tools
-  rev: v0.2.0-247
+  rev: v0.2.0-253
   hooks:
   - id: yaml-sorter
     exclude: ^(\.github/ISSUE_TEMPLATE/|\.github/workflows/|GitVersion\.yml)
@@ -52,7 +52,7 @@ repos:
   - id: check-added-large-files
   - id: mixed-line-ending
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v2.1.0
+  rev: v2.3.0
   hooks:
   - id: mypy
     additional_dependencies:
@@ -61,7 +61,7 @@ repos:
     - httpx>=0.28.1
     - psutil>=6.0
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.14
+  rev: v0.16.1
   hooks:
   - id: ruff
     args:
@@ -74,7 +74,7 @@ repos:
     args:
     - --strict
 - repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.48.0
+  rev: v0.49.1
   hooks:
   - id: markdownlint
     exclude: ^\.claude/
@@ -84,7 +84,7 @@ repos:
     - MD033
     - MD041
 - repo: https://github.com/gitleaks/gitleaks
-  rev: v8.30.1
+  rev: v8.30.0
   hooks:
   - id: gitleaks
 - repo: https://github.com/compilerla/conventional-pre-commit
@@ -105,6 +105,6 @@ repos:
     - revert
     - ci
 - repo: https://github.com/chrysa/guideline-checker
-  rev: v1.30.10
+  rev: v1.31.0-13
   hooks:
   - id: guideline-check
