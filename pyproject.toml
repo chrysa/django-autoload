@@ -25,7 +25,7 @@ drf = ["djangorestframework>=3.14"]
 celery = ["celery>=5.3"]
 rq = ["rq>=1.10"]
 django-rq = ["django-rq>=2.5"]
-test = ["pytest", "pytest-django", "djangorestframework>=3.14", "celery>=5.3", "rq>=1.10", "django-rq>=2.5"]
+test = ["pytest", "pytest-cov>=5.0", "pytest-django", "djangorestframework>=3.14", "celery>=5.3", "rq>=1.10", "django-rq>=2.5"]
 
 [project.urls]
 Homepage = "https://github.com/chrysa/django-autoload"
@@ -38,6 +38,18 @@ include = ["django_autoload*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = "-v --tb=short --cov=django_autoload --cov-report=term-missing --cov-fail-under=85"
+
+[tool.coverage.run]
+source = ["django_autoload"]
+omit = ["**/tests/**"]
+# Emit repo-relative file paths in coverage.xml so SonarCloud can map them
+# to source files (otherwise paths are absolute and resolve to nothing).
+relative_files = true
+
+[tool.coverage.report]
+fail_under = 85
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
 
 [tool.ruff]
 # examples/ holds illustrative demo Django apps, not library code.
