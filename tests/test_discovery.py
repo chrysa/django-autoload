@@ -68,6 +68,6 @@ def test_apply_settings_sets_attrs_on_module_object() -> None:
 def test_apply_settings_accepts_dotted_target(project_tree: Path) -> None:
     # apps.blog.signals exists in the synthetic tree and is importable.
     apply_settings({"INJECTED": 7}, target="apps.blog.signals")
-    import apps.blog.signals as signals
+    from apps.blog import signals
 
     assert signals.INJECTED == 7
