@@ -33,14 +33,16 @@ def _extract(dotted: str) -> dict[str, Any]:
     }
 
 
-def load_settings(*, dirs: list[str] | None = None) -> dict[str, Any]:
+def load_settings(*, dirs: list[str] | None = None, base_dir: Any = None) -> dict[str, Any]:
     """Merge UPPER_CASE settings from every module in the given directories.
 
     ``dirs`` defaults to ``AUTOLOAD["SETTINGS_DIRS"]`` (relative to BASE_DIR).
-    Modules are imported in sorted order, so later files override earlier ones.
+    Pass ``base_dir`` explicitly to run before settings are configured. Modules
+    are imported in sorted order, so later files override earlier ones.
     """
-    base = get_base_dir()
-    dirs = dirs if dirs is not None else get_config()["SETTINGS_DIRS"]
+    overrides = {"BASE_DIR": base_dir}
+    base = get_base_dir(overrides)
+    dirs = dirs if dirs is not None else get_config(overrides)["SETTINGS_DIRS"]
     merged: dict[str, Any] = {}
     for directory in dirs:
         dir_path = base / directory
@@ -52,12 +54,15 @@ def load_settings(*, dirs: list[str] | None = None) -> dict[str, Any]:
     return merged
 
 
-def discover_app_settings(*, filename: str = "settings.py") -> dict[str, Any]:
+def discover_app_settings(
+    *, filename: str = "settings.py", base_dir: Any = None, roots: list[str] | None = None
+) -> dict[str, Any]:
     """Merge UPPER_CASE settings from a per-app settings module under the roots."""
-    base = get_base_dir()
+    overrides = {"BASE_DIR": base_dir, "ROOTS": roots}
+    base = get_base_dir(overrides)
     merged: dict[str, Any] = {}
     seen: set[str] = set()
-    for root in get_roots():
+    for root in get_roots(overrides):
         if not root.exists():
             continue
         for settings_file in sorted(root.glob(f"**/{filename}")):
