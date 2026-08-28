@@ -27,15 +27,15 @@ def check_autoload(app_configs: Any, **kwargs: Any) -> list[Any]:
         )
         return errors
 
-    for root in get_roots():
-        if not root.exists():
-            errors.append(
-                DjangoWarning(
-                    f"Configured AUTOLOAD root does not exist: {root}",
-                    hint="Remove it from AUTOLOAD['ROOTS'] or create the directory.",
-                    id="django_autoload.W001",
-                )
-            )
+    errors.extend(
+        DjangoWarning(
+            f"Configured AUTOLOAD root does not exist: {root}",
+            hint="Remove it from AUTOLOAD['ROOTS'] or create the directory.",
+            id="django_autoload.W001",
+        )
+        for root in get_roots()
+        if not root.exists()
+    )
 
     if config["ROOTS"] and not discover_app_markers():
         errors.append(
