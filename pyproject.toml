@@ -53,7 +53,7 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedE
 
 [tool.ruff]
 # examples/ holds illustrative demo Django apps, not library code.
-extend-exclude = ["examples"]
+extend-exclude = ["examples", ".claude", "scripts/quality_gate.py"]
 
 [tool.ruff.lint]
 select = [
