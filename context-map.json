@@ -1,0 +1,36 @@
+{
+  "adrs": [],
+  "contracts": [
+    "standards"
+  ],
+  "ddd_level": "(not available)",
+  "dependencies": {
+    "python": [
+      "celery",
+      "django",
+      "django-rq",
+      "djangorestframework",
+      "pytest",
+      "pytest-cov",
+      "pytest-django",
+      "rq"
+    ]
+  },
+  "depends_on_shared_standards": true,
+  "description": "Convention-over-configuration auto-discovery for Django: apps, urls, settings and app components.",
+  "entry_points": [],
+  "key_directories": [
+    ".claude",
+    ".github",
+    ".vscode",
+    "examples",
+    "legal",
+    "scripts",
+    "src",
+    "standards",
+    "tests"
+  ],
+  "name": "django-autoload",
+  "profiles": [],
+  "schema": "chrysa.context-map/1"
+}
