@@ -103,7 +103,6 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
     action-check.yml
     approved-label.yml
     auto-assign.yml
-    auto-update-pre-commit.yml
     ci.yml
     dependabot-auto-merge.yml
     detect-conflicts.yml
@@ -149,6 +148,7 @@ legal/
 opencode.json
 pyproject.toml
 scripts/
+  gen_context_files.py
   quality_gate.py
 src/
   django_autoload/
@@ -218,6 +218,7 @@ examples/demo/demo_project/__init__.py
 examples/demo/demo_project/settings.py — Minimal Django settings for the django-autoload demo project.
 examples/demo/demo_project/urls.py — URL configuration — assembled by auto-discovery.
 examples/demo/manage.py
+scripts/gen_context_files.py — Generate the standardised per-repo context files from the repo's own content.
 scripts/quality_gate.py
 src/django_autoload/__init__.py — django-autoload — convention-over-configuration auto-discovery for Django.
 src/django_autoload/apps.py — AppConfig that wires component auto-loading into Django's startup.
