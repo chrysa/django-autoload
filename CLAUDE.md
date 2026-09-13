@@ -80,6 +80,7 @@ pytest DDD + pytest-mock conventions when writing tests.
 - Branch model — `main` is production, `develop` is the workspace
 - Merge
 - One PR per issue
+- Every PR references a Shortcut story
 - Issues and PRs are type-driven
 
 ### Architecture, decoupling & portability · `standards/rules/architecture.md`
