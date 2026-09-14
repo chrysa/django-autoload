@@ -106,6 +106,7 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
     ci.yml
     dependabot-auto-merge.yml
     detect-conflicts.yml
+    enforce-shortcut-link.yml
     labeler.yml
     pr-dependencies.yml
     pull-request-size.yml
