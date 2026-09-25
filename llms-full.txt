@@ -19,6 +19,7 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
     general-solution-architect.md
     general-technical-project-lead.md
     general-technical-writer.md
+    library-compat-reviewer.md
   ape/
     README.md
     ape-transform-v2.md
@@ -34,9 +35,13 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
   hooks/
     check-no-env-files.cjs
     circuit-breaker.cjs
+    claude-config-drift.cjs
     frustration-detection.cjs
+    graphify-auto-update.cjs
     secret-scanner.cjs
     verifiable-thresholds.cjs
+  output-styles/
+    concise.md
   rules/
     folder-readme.md
   settings.json
@@ -48,6 +53,8 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
     api-design/
       SKILL.md
     async-patterns/
+      SKILL.md
+    changelog-preview/
       SKILL.md
     check/
       SKILL.md
@@ -76,6 +83,8 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
     implement/
       SKILL.md
     plan/
+      SKILL.md
+    python-library-api-compat/
       SKILL.md
     spec/
       SKILL.md
@@ -120,6 +129,7 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
 .vscode/
   extensions.json
 AGENTS.md
+ARCHITECTURE.md
 CHANGELOG.md
 CLAUDE.md
 CODEOWNERS
@@ -169,6 +179,7 @@ standards/
     README.md
     accessibility.md
     agents.md
+    ai-orchestration.md
     api.md
     architecture.md
     backend-python.md
