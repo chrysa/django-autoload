@@ -1,82 +1,86 @@
 # Architecture — django-autoload
 
+> This file existed before this documentation pass and has been expanded.
+> Tags: FACT / INFERENCE / UNKNOWN. Documentation only; no source changed.
+
 ## Purpose
 
-`django-autoload` is a small, dependency-light library that brings
-convention-over-configuration auto-discovery to Django projects. Instead of
-hand-maintaining `INSTALLED_APPS`, URL includes and settings imports, the
-package discovers apps, URL patterns, settings fragments and per-app components
-by scanning the project tree. It makes no assumption about project layout (no
-mandatory `apps/` directory) and pulls in no runtime dependency beyond Django.
+FACT: `django-autoload` is a small, dependency-light library that brings
+convention-over-configuration auto-discovery to Django: it discovers apps, URL
+includes, settings fragments and per-app components so `INSTALLED_APPS`,
+`urlpatterns` and settings imports stop being hand-maintained (evidence:
+`README.md`, module docstrings).
 
-## Stack
+## Layout (FACT — `src/` PEP 561 library)
 
-- Language: Python 3 (`django>=4.2`).
-- Framework: Django (the sole required dependency).
-- Optional extras (imported lazily, only when their helper is called):
-  `drf` (djangorestframework), `celery`, `rq`, `django-rq`.
-- Packaging: setuptools + wheel via `pyproject.toml` (src layout).
-- Tooling: Ruff (lint/format), mypy (type-check), pytest + pytest-cov +
-  pytest-django (tests, coverage gate 85%), pre-commit, Docker (`Dockerfile.test`).
-
-## Layout
-
-- `src/django_autoload/` — the library package:
-  - `__init__.py` — public API surface and `__version__`.
-  - `conf.py` — reads and normalises the `AUTOLOAD` settings dict.
-  - `discovery.py` — core discovery of apps (`discover_apps`, `autoload_into`).
-  - `urls.py` — `autodiscover_urls(name)` include-pattern discovery.
-  - `settings.py` — settings-fragment merging (`load_settings`,
-    `discover_app_settings`, `apply_settings`).
-  - `components.py` — per-app component import (`discover_components`).
-  - `apps.py` — `AutoloadConfig` AppConfig; its `ready()` loads components and
-    registers checks.
-  - `checks.py` — Django system checks.
-  - `routers.py` / `tasks.py` / `jobs.py` — optional-extra integrations (DRF
-    routers, Celery task autodiscovery, RQ/django-rq job imports).
-- `tests/` — pytest suite (`test_discovery.py`, `test_settings_components.py`,
-  `test_checks.py`, `test_extras.py`, `conftest.py`).
-- `examples/demo/` — an illustrative Django project (not library code) with
-  `apps/blog` and `apps/shop`, showing discovery in action.
-- Root: `pyproject.toml`, `Makefile`, `Dockerfile.test`, `README.md`,
-  `.pre-commit-config.yaml`, CI config under `.github/`.
-
-## Entrypoints
-
-This is a library, not a runnable service — it has no server or CLI entrypoint.
-Integration points are the public API functions imported from
-`django_autoload` (see the API table in `README.md`), plus:
-
-- `default_app_config = "django_autoload.apps.AutoloadConfig"` — activated by
-  adding `"django_autoload"` to `INSTALLED_APPS`; its `ready()` hook drives
-  component loading and check registration.
-- The `examples/demo/manage.py` project is the runnable demonstration harness.
-
-## Data & external dependencies
-
-- No database of its own. (The demo ships an `examples/demo/db.sqlite3` for the
-  sample project only.)
-- No network or external services. Behaviour is configured entirely through the
-  optional `AUTOLOAD` dict in Django settings; with no config, discovery scans
-  `settings.BASE_DIR`.
-- Optional integrations activate only when the corresponding extra is installed
-  and its helper is explicitly called.
-
-## Build & test
-
-Real commands (from `Makefile` / `pyproject.toml`):
-
-```bash
-make install       # pip install -e ".[dev]" + pre-commit install
-make test          # pytest tests/ --tb=short
-make test-cov      # pytest with coverage (term + xml)
-make lint          # ruff check src tests
-make format        # ruff format src tests
-make typecheck     # mypy src/django_autoload
-make build         # python -m build  (wheel)
-make docker-test   # build + run tests in Docker via Dockerfile.test
-make ci            # lint + typecheck + test
-make pre-commit    # pre-commit run --all-files
+```
+src/django_autoload/
+  __init__.py    # public API surface + __version__ (importlib.metadata)
+  conf.py        # reads/normalises the AUTOLOAD dict; DEFAULTS; path helpers
+  discovery.py   # discover_apps, autoload_into, discover_app_markers
+  urls.py        # autodiscover_urls(name) — include() pattern discovery
+  settings.py    # load_settings, discover_app_settings, apply_settings
+  components.py  # discover_components() — per-app signals/receivers/... import
+  apps.py        # AutoloadConfig; ready() loads components + registers checks
+  checks.py      # check_autoload — Django system check (fail loudly)
+  routers.py     # optional DRF extra: autodiscover_routers()
+  tasks.py       # optional Celery extra: autodiscover_tasks()
+  jobs.py        # optional RQ/django-rq extra: autodiscover_jobs()
+tests/           # pytest-django suite (mirrors src)
+examples/demo/   # runnable demo project (apps/blog, apps/shop)
 ```
 
-Coverage gate is enforced at 85% (`--cov-fail-under=85`).
+## Configuration surface (FACT — `conf.py` `DEFAULTS`)
+
+The optional `AUTOLOAD` dict in Django settings, merged over `DEFAULTS`:
+
+| Key             | Default            | Role                                                        |
+| --------------- | ------------------ | ----------------------------------------------------------- |
+| `ROOTS`         | `[]`               | Sub-dirs (relative to BASE_DIR) to scan; empty → scan BASE_DIR |
+| `BASE_DIR`      | `None`             | Explicit project root; None → `settings.BASE_DIR`, then `cwd()` |
+| `APP_MARKER`    | `apps.py`*         | Filename that marks a directory as a Django app package      |
+| `COMPONENTS`    | e.g. `["signals"]`*| Per-app modules/packages imported on `ready()`               |
+| `URL_PATTERNS`  | mapping*           | logical name → relative urls file (used by `autodiscover_urls`) |
+| `SETTINGS_DIRS` | *                  | Dirs merged by `load_settings()`                            |
+
+INFERENCE (*): exact default literals live in `conf.py` `DEFAULTS`; the roles
+above are FACT from the inline comments and docstrings.
+
+Precedence (FACT, `conf.py get_config`): `DEFAULTS` < `settings.AUTOLOAD` (only
+when `settings.configured`) < non-`None` `overrides`. `_settings_autoload()`
+returns `{}` while a settings module is still being built, so discovery is safe
+to call from `INSTALLED_APPS = [*discover_apps()]`.
+
+## Runtime wiring (FACT)
+
+1. Project adds `"django_autoload"` to `INSTALLED_APPS`.
+2. `AutoloadConfig.ready()` (`apps.py`) runs at startup: registers the
+   `check_autoload` system check and calls `discover_components()`.
+3. `discover_components()` (`components.py`) imports each configured component
+   (`<component>.py` module or every module in a `<component>/` package) for
+   every discovered app marker.
+4. URL / settings / router / task / job helpers are explicitly called by the
+   host project where needed (they are not auto-invoked by `ready()`).
+
+## Path resolution (FACT — `conf.dotted_path`)
+
+Filesystem paths under the scan roots are converted to importable dotted module
+paths relative to BASE_DIR (package path for dirs, module path without `.py` for
+files). Discovery de-duplicates via `seen` sets and sorts globs for
+determinism.
+
+## Optional integrations (FACT)
+
+- `routers.autodiscover_routers()` — merges each app's DRF `router` registry
+  into one `DefaultRouter` (requires `[drf]`).
+- `tasks.autodiscover_tasks(celery_app)` — wraps Celery `autodiscover_tasks`
+  with the discovered app list (requires `[celery]`).
+- `jobs.autodiscover_jobs()` — imports each app's `jobs` module/package so
+  `@job` decorators run; RQ has no native task autodiscovery (requires
+  `[rq]` / `[django-rq]`).
+
+## Quality gates (FACT)
+
+Coverage gate 85% (`pyproject.toml`). Lint/type (ruff, `mypy --strict`) run in
+pre-commit + release-time CI, not per-push (evidence: `CLAUDE.md`, `ci.yml`
+header). See TESTING.md.
