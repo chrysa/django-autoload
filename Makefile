@@ -1,7 +1,10 @@
 # makefile-tier: lib
 .DEFAULT_GOAL := help
 
-.PHONY: help install dev test test-cov docker-test lint format typecheck build pre-commit clean
+MATRIX_PYTHON ?= 3.13 3.14
+MATRIX_DJANGO ?= 5.2 6.0
+
+.PHONY: help install dev test test-cov docker-test docker-test-matrix lint format typecheck build pre-commit clean
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | \
@@ -39,6 +42,14 @@ docker-test: ## Run tests in Docker (CI-compatible)
 	  docker cp django-autoload-test-run:/app/coverage.xml ./coverage.xml 2>/dev/null || true; \
 	  docker rm django-autoload-test-run; \
 	  exit $$EXIT
+
+docker-test-matrix: ## Run tests in Docker across Python x Django (override MATRIX_PYTHON / MATRIX_DJANGO)
+	@fail=0; for py in $(MATRIX_PYTHON); do for dj in $(MATRIX_DJANGO); do \
+		echo "=== Python $$py / Django $$dj ==="; \
+		rm -rf coverage.xml; touch coverage.xml; \
+		docker build -q -f Dockerfile.test --build-arg PYTHON_VERSION=$$py --build-arg DJANGO_VERSION=$$dj -t django-autoload-test:$$py-$$dj . >/dev/null \
+		&& docker run --rm -v "$(PWD)/coverage.xml:/app/coverage.xml" django-autoload-test:$$py-$$dj || fail=1; \
+	done; done; exit $$fail
 
 build: ## Build wheel distribution package
 	python -m build
