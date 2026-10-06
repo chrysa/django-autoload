@@ -86,6 +86,8 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
       SKILL.md
     python-library-api-compat/
       SKILL.md
+    rollout-status/
+      SKILL.md
     spec/
       SKILL.md
     standards-authoring/
@@ -98,6 +100,7 @@ Convention-over-configuration auto-discovery for Django: apps, urls, settings an
       SKILL.md
   thresholds.json
 .editorconfig
+.env.example
 .gitattributes
 .github/
   CODEOWNERS
